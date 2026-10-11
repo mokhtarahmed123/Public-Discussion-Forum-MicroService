@@ -13,7 +13,7 @@ namespace VotesService.Application.Feature.Votes.Command.Validation
                 .Must(id => ObjectId.TryParse(id, out _)).WithMessage("رقم العنصر غير صحيح.");
 
             RuleFor(x => x.Type).IsInEnum();
-            RuleFor(x => x.UserId).NotEqual(Guid.Empty);
+
         }
     }
 }

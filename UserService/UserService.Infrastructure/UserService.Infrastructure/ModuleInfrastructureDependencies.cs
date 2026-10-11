@@ -129,7 +129,7 @@ namespace UserService.Infrastructure
                           ValidAudience = Configuration["JWT:AudienceIP"],
 
                           ValidateIssuerSigningKey = true,
-                          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("JWT:SecretKey")),
+                          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                           RoleClaimType = "roleName",
                           ValidateLifetime = true,
                           ClockSkew = TimeSpan.Zero

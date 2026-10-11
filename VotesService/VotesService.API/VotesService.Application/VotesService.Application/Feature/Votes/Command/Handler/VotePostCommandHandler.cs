@@ -6,6 +6,7 @@ using VotesService.Application.ExternalApiService.PostServiceInterface;
 using VotesService.Application.Feature.Votes.Command.Model;
 using VotesService.Application.ServiceInterface;
 using VotesService.Domain.Enum;
+using VotesService.Domain.Helper;
 namespace VotesService.Application.Feature.Votes.Command.Handler
 {
     public class VotePostCommandHandler : ResponseHandler, IRequestHandler<VotePostCommand, Bases.Response<string>>
@@ -13,21 +14,24 @@ namespace VotesService.Application.Feature.Votes.Command.Handler
         private readonly IVotesService votesService;
         private readonly IPostClient postClient;
         private readonly IPublishEndpoint publishEndpoint;
+        private readonly ICurrentUserService currentUserService;
 
-        public VotePostCommandHandler(IVotesService votesService, IPostClient postClient, IPublishEndpoint publishEndpoint)
+        public VotePostCommandHandler(IVotesService votesService, IPostClient postClient, IPublishEndpoint publishEndpoint, ICurrentUserService currentUserService)
         {
             this.votesService = votesService;
             this.postClient = postClient;
             this.publishEndpoint = publishEndpoint;
+            this.currentUserService = currentUserService;
         }
 
         public async Task<Bases.Response<string>> Handle(VotePostCommand request, CancellationToken ct)
         {
+            var userId = currentUserService.UserId;
 
-            var postId = request.TargetId; // string، الـ Validator اتأكد منه خلاص
+            var postId = request.TargetId;
 
             var existing = await votesService.GetUserVoteAsync(
-                request.UserId, VoteTargetType.Post, request.TargetId, ct);
+                Guid.Parse(userId), VoteTargetType.Post, request.TargetId, ct);
 
             if (existing is not null && existing.Locked)
                 return BadRequest<string>("تصويتك مقفول ومينفعش يتغير.");
@@ -50,13 +54,13 @@ namespace VotesService.Application.Feature.Votes.Command.Handler
                     TargetId = request.TargetId,
                     PostId = request.TargetId,
                     TargetType = VoteTargetType.Post,
-                    UserId = request.UserId,
+                    UserId = Guid.Parse(userId),
                     Type = request.Type
                 };
 
 
                 var created = await votesService.AddAsync(vote, ct);
-                await Publish(postId, request.UserId, newValue, ct);
+                await Publish(postId, Guid.Parse(userId), newValue, ct);
                 return Success(created.Id);
             }
 
@@ -64,14 +68,14 @@ namespace VotesService.Application.Feature.Votes.Command.Handler
             if (existing.Type == request.Type)
             {
                 await votesService.DeleteAsync(existing, ct);
-                await Publish(postId, request.UserId, -newValue, ct);
+                await Publish(postId, Guid.Parse(userId), -newValue, ct);
                 return Deleted<string>();
             }
 
             existing.Type = request.Type;
             existing.UpdatedAt = DateTime.UtcNow;
             await votesService.UpdateAsync(existing, ct);
-            await Publish(postId, request.UserId, newValue * 2, ct);
+            await Publish(postId, Guid.Parse(userId), newValue * 2, ct);
 
             return Success(existing.Id);
         }

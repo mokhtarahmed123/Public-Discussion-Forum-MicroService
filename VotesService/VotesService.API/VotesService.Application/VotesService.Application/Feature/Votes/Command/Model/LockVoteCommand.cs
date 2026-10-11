@@ -11,7 +11,7 @@ namespace VotesService.Application.Feature.Votes.Command.Model
         public bool IsLocked { get; set; } = true;   // true = Close ، false = Open
         public string? PostId { get; set; }
 
-        public Guid UserId { get; set; }
+        //public Guid UserId { get; set; }
     }
 
 }

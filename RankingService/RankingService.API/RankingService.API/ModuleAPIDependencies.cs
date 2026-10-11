@@ -9,16 +9,16 @@ namespace RankingService.API
             services.Configure<RankingDatabaseSettings>(
                  configuration.GetSection("RankingDatabase"));
 
-            #region CORS
-            services.AddCors(options =>
-                     options.AddPolicy("CorsPolicy", policyBuilder =>
-                         policyBuilder.SetIsOriginAllowed(_ => true)
+            //#region CORS
+            //services.AddCors(options =>
+            //         options.AddPolicy("CorsPolicy", policyBuilder =>
+            //             policyBuilder.SetIsOriginAllowed(_ => true)
 
-                                      .AllowAnyMethod()
-                                      .AllowAnyHeader().AllowCredentials())
+            //                          .AllowAnyMethod()
+            //                          .AllowAnyHeader().AllowCredentials())
 
-                 );
-            #endregion
+            //     );
+            //#endregion
             return services;
         }
     }

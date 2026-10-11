@@ -26,12 +26,13 @@ namespace VotesService.API
             var app = builder.Build();
 
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-            app.UseCors("CorsPolicy");
+            //if (app.Environment.IsDevelopment())
+            //{
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            //}
+            //app.UseCors("CorsPolicy");
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 

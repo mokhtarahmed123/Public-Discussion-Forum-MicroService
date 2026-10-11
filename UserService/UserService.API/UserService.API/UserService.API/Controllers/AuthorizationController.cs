@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using UserService.API.Bases;
 using UserService.Application.Feature.Authorization.Command.Model;
@@ -8,6 +9,7 @@ namespace UserService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class AuthorizationController : AppBaseController
     {
         [HttpPost("AssignRole/{UserId}/{RoleId}")]

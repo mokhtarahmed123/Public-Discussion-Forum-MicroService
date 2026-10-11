@@ -28,6 +28,7 @@ namespace RankingService.Application.Feature.Comments.Command.Handler
         public async Task<Response<string>> Handle(AddTopTenCommentByPostIdCommand request, CancellationToken cancellationToken)
         {
             var scores = await commentScoreService.GetTopAsync(request.PostId, 20, cancellationToken);
+            var scoreById = scores.ToDictionary(s => s.CommentId, s => s.Score);
 
             var comments = await commentClient.GetCommentsByPostIdAsync(
         request.PostId, request.PageNumber, request.PageSize, cancellationToken);
@@ -37,15 +38,17 @@ namespace RankingService.Application.Feature.Comments.Command.Handler
             if (valid.Count == 0)
                 return NotFound<string>("مفيش كومنتات للبوست ده.");
 
+
             var topTen = valid
-                .OrderByDescending(c => c.LikesCount)
-                .Take(10)
                 .Select(c =>
                 {
                     var item = mapper.Map<TopTenComments>(c);
-                    item.Score = c.LikesCount;
+                    item.Score = scoreById.GetValueOrDefault(c.Id, 0);
                     return item;
                 })
+                .OrderByDescending(x => x.Score)
+                .Take(10)
+                .Select((x, i) => { x.Rank = i + 1; return x; })
                 .ToList();
 
             await topTenCommentsService.ReplaceForPost(request.PostId, topTen, cancellationToken);

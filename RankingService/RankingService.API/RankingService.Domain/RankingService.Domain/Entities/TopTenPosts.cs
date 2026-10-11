@@ -5,7 +5,7 @@ namespace RankingService.Domain.Entities
     public class TopTenPosts
     {
         [BsonId]
-        public string Id { get; init; } = default!;      // = PostId
+        public string Id { get; init; } = default!;
         public string Title { get; init; } = default!;
         public string Content { get; init; } = default!;
         public int Score { get; set; }

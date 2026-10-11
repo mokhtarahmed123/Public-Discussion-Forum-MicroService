@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="11.0.0-rc.1.26425.128" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="11.0.0-rc.1.26425.128" />
-    <PackageReference Include="MongoDB.Driver" Version="3.12.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,8 @@
+{
+  "fullName": "TestUser",
+  "email": "mokhtarahmed3108@gmail.com",
+  "password": "Test@1234",
+  "confirmPassword": "Test@1234",
+  "phone": "01012345678"
+}
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImVmOWFhNDI5LTIwNTAtNGYyNS04N2IwLTA4ZGYyOTdjYzdjNSIsIkVtYWlsIjoibW9raHRhcmFobWVkMzEwOEBnbWFpbC5jb20iLCJqdGkiOiI3Y2ZlZjE1MS0wMzQ4LTQ4M2YtODkzMC05NGE1YTU4MjIwNTYiLCJyb2xlTmFtZSI6IkFkbWluIiwiVXNlck5hbWUiOiJUZXN0VXNlciIsImV4cCI6MTc5MjAyMDg0MiwiaXNzIjoiZm9ydW0tYXV0aCIsImF1ZCI6ImZvcnVtLWFwaSJ9.1qpgeq9t_ZAP4k9ocjH89HKBqKjFMS_tI9v1QGa_hGw

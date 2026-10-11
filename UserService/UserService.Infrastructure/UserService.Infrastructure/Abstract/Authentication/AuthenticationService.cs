@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
@@ -30,13 +32,15 @@ namespace UserService.Infrastructure.Abstract.Authentication
         private readonly IAuthorizationService iAuthorizationService;
 
         private readonly IUnitOfWork unitOfWork;
+        private readonly ILogger<Users> logger;
+        private readonly IConfiguration configuration;
         private readonly IEmailService emailService;
         private readonly JWTModel _JWTSettings;
 
         public AuthenticationService(RoleManager<UserService.Domain.Entities.Role> roleManager,
             UserManager<Users> userManager, ConcurrentDictionary<string, RefreshToken> UseRefreshToken,
             IHttpContextAccessor httpContextAccessor, IEmailService emailService, AppDbContext appDbContext,
-            IAuthorizationService IAuthorizationService, IOptions<JWTModel> emailSettings, IUnitOfWork unitOfWork)
+            IAuthorizationService IAuthorizationService, IOptions<JWTModel> emailSettings, IUnitOfWork unitOfWork, ILogger<Users> logger, IConfiguration configuration)
         {
 
             this.roleManager = roleManager;
@@ -47,6 +51,8 @@ namespace UserService.Infrastructure.Abstract.Authentication
             iAuthorizationService = IAuthorizationService;
 
             this.unitOfWork = unitOfWork;
+            this.logger = logger;
+            this.configuration = configuration;
             this.emailService = emailService;
             _JWTSettings = emailSettings.Value;
 
@@ -314,7 +320,7 @@ namespace UserService.Infrastructure.Abstract.Authentication
                     return SignUpResult.UserWithEmailAlreadyExists;
                 }
 
-
+                var isFirstUser = !await userManager.Users.AnyAsync();
                 // Create user
                 var createResult =
                     await userManager.CreateAsync(user, password);
@@ -323,10 +329,11 @@ namespace UserService.Infrastructure.Abstract.Authentication
                 {
                     return SignUpResult.UserCreationFailed;
                 }
+                var roleName = isFirstUser ? "Admin" : "User";
 
                 // Get default role
                 var role =
-                    await roleManager.FindByNameAsync("User");
+                    await roleManager.FindByNameAsync(roleName);
 
                 if (role is null)
                 {
@@ -362,11 +369,10 @@ namespace UserService.Infrastructure.Abstract.Authentication
 
                 var request = httpContext.Request;
 
+                var baseUrl = (configuration["App:PublicBaseUrl"] ?? $"{request.Scheme}://{request.Host}").TrimEnd('/');
+
                 var confirmationLink =
-                    $"{request.Scheme}://{request.Host}" +
-                    $"/api/Authentication/ConfirmEmail" +
-                    $"?userId={user.Id}" +
-                    $"&code={encodedToken}";
+                    $"{baseUrl}/api/Authentication/ConfirmEmail?userId={user.Id}&code={encodedToken}";
 
                 // Prepare email
                 var emailBody =
@@ -378,28 +384,31 @@ namespace UserService.Infrastructure.Abstract.Authentication
                     user.Email,
                     emailBody,
                     "Confirm your email");
+                string emailResult;
 
-                // Send email
-                var emailResult =
-                    await emailService.SendEmailAsync(emailDto);
 
-                if (emailResult != "Success")
+                try
                 {
-                    return SignUpResult.FailedToSendEmail;
+                    emailResult = await emailService.SendEmailAsync(emailDto);
                 }
-
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to send confirmation email");
+                    emailResult = "Failed";
+                }
                 await transaction.CommitAsync();
 
                 return SignUpResult.Success;
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync();
-
-                return SignUpResult.Failed;
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return SignUpResult.Failed;
+                }
             }
         }
-
         public Task<string> ValidateToken(string Token)
         {
             var Handler = new JwtSecurityTokenHandler();

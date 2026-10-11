@@ -6,6 +6,7 @@ using VotesService.Application.ExternalApiService.CommentServiceInterface;
 using VotesService.Application.Feature.Votes.Command.Model;
 using VotesService.Application.ServiceInterface;
 using VotesService.Domain.Enum;
+using VotesService.Domain.Helper;
 
 namespace VotesService.Application.Feature.Votes.Command.Handler
 {
@@ -14,21 +15,25 @@ namespace VotesService.Application.Feature.Votes.Command.Handler
         private readonly IVotesService votesService;
         private readonly ICommentClient commentClient;
         private readonly IPublishEndpoint publishEndpoint;
+        private readonly ICurrentUserService currentUserService;
 
         public VoteCommentCommandHandler(
             IVotesService votesService,
             ICommentClient commentClient,
-            IPublishEndpoint publishEndpoint)
+            IPublishEndpoint publishEndpoint, ICurrentUserService currentUserService)
         {
             this.votesService = votesService;
             this.commentClient = commentClient;
             this.publishEndpoint = publishEndpoint;
+            this.currentUserService = currentUserService;
         }
 
         public async Task<Bases.Response<string>> Handle(VoteCommentCommand request, CancellationToken cancellationToken)
         {
+            var userId = currentUserService.UserId;
+
             var existing = await votesService.GetUserVoteAsync(
-                request.UserId, VoteTargetType.Comment, request.TargetId, cancellationToken);
+              Guid.Parse(userId), VoteTargetType.Comment, request.TargetId, cancellationToken);
 
             if (existing is not null && existing.Locked)
                 return BadRequest<string>("تصويتك مقفول ومينفعش يتغير.");
@@ -49,27 +54,27 @@ namespace VotesService.Application.Feature.Votes.Command.Handler
                 {
                     TargetId = request.TargetId,
                     TargetType = VoteTargetType.Comment,
-                    UserId = request.UserId,
+                    UserId = Guid.Parse(userId),
                     PostId = request.PostId,
                     Type = request.Type
                 };
 
                 var created = await votesService.AddAsync(vote, cancellationToken);
-                await Publish(request.TargetId, request.PostId, request.UserId, newValue, cancellationToken);
+                await Publish(request.TargetId, request.PostId, Guid.Parse(userId), newValue, cancellationToken);
                 return Success(created.Id);
             }
 
             if (existing.Type == request.Type)
             {
                 await votesService.DeleteAsync(existing, cancellationToken);
-                await Publish(request.TargetId, request.PostId, request.UserId, -newValue, cancellationToken);
+                await Publish(request.TargetId, request.PostId, Guid.Parse(userId), -newValue, cancellationToken);
                 return Deleted<string>();
             }
 
             existing.Type = request.Type;
             existing.UpdatedAt = DateTime.UtcNow;
             await votesService.UpdateAsync(existing, cancellationToken);
-            await Publish(request.TargetId, request.PostId, request.UserId, newValue * 2, cancellationToken);
+            await Publish(request.TargetId, request.PostId, Guid.Parse(userId), newValue * 2, cancellationToken);
 
             return Success(existing.Id);
         }

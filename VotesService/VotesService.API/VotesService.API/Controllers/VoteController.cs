@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VotesService.API.Bases;
 using VotesService.Application.Bases;
@@ -14,7 +15,7 @@ namespace VotesService.API.Controllers
     public class VoteController : AppBaseController
     {
 
-
+        [Authorize]
         [HttpPost("posts/{postId}/vote")]
         [SwaggerOperation(
             Summary = "Votes on a post",
@@ -39,6 +40,8 @@ namespace VotesService.API.Controllers
         public async Task<IActionResult> GetPostSummary(string postId, CancellationToken cancellationToken)
             => NewResult(await Mediator.Send(new GetVoteSummaryQuery(VoteTargetType.Post, postId), cancellationToken));
 
+
+        [Authorize]
         [HttpGet("posts/{postId}/vote/mine")]
         [SwaggerOperation(
             Summary = "Gets a user's vote on a post",
@@ -49,6 +52,7 @@ namespace VotesService.API.Controllers
         public async Task<IActionResult> GetMyPostVote(string postId, [FromQuery] Guid userId, CancellationToken cancellationToken)
             => NewResult(await Mediator.Send(new GetUserVoteQuery(VoteTargetType.Post, postId, userId), cancellationToken));
 
+        [Authorize]
         [HttpPatch("posts/{postId}/vote/lock")]
         [SwaggerOperation(
             Summary = "Locks or unlocks voting on a post",
@@ -67,6 +71,7 @@ namespace VotesService.API.Controllers
         }
 
         // ===================== Comments =====================
+        [Authorize]
 
         [HttpPost("posts/{postId}/comments/{commentId}/vote")]
         [SwaggerOperation(
@@ -93,6 +98,7 @@ namespace VotesService.API.Controllers
         public async Task<IActionResult> GetCommentSummary(string postId, string commentId, CancellationToken cancellationToken)
             => NewResult(await Mediator.Send(new GetVoteSummaryQuery(VoteTargetType.Comment, commentId), cancellationToken));
 
+        [Authorize]
         [HttpGet("posts/{postId}/comments/{commentId}/vote/mine")]
         [SwaggerOperation(
             Summary = "Gets a user's vote on a comment",
@@ -103,6 +109,7 @@ namespace VotesService.API.Controllers
         public async Task<IActionResult> GetMyCommentVote(string postId, string commentId, [FromQuery] Guid userId, CancellationToken cancellationToken)
             => NewResult(await Mediator.Send(new GetUserVoteQuery(VoteTargetType.Comment, commentId, userId), cancellationToken));
 
+        [Authorize]
         [HttpPatch("posts/{postId}/comments/{commentId}/vote/lock")]
         [SwaggerOperation(
             Summary = "Locks or unlocks voting on a comment",

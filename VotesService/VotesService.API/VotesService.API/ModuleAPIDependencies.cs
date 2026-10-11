@@ -9,16 +9,16 @@ namespace VotesService.API
             services.Configure<VotesDatabaseSettings>(
                  configuration.GetSection("VotesDatabase"));
 
-            #region CORS
-            services.AddCors(options =>
-                     options.AddPolicy("CorsPolicy", policyBuilder =>
-                         policyBuilder.SetIsOriginAllowed(_ => true)
+            //#region CORS
+            //services.AddCors(options =>
+            //         options.AddPolicy("CorsPolicy", policyBuilder =>
+            //             policyBuilder.SetIsOriginAllowed(_ => true)
 
-                                      .AllowAnyMethod()
-                                      .AllowAnyHeader().AllowCredentials())
+            //                          .AllowAnyMethod()
+            //                          .AllowAnyHeader().AllowCredentials())
 
-                 );
-            #endregion
+            //     );
+            //#endregion
             return services;
         }
     }

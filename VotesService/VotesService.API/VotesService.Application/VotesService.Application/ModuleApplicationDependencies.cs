@@ -27,11 +27,15 @@ namespace VotesService.Application
             {
                 x.UsingRabbitMq((ctx, cfg) =>
                 {
-                    cfg.Host("localhost", "/", h =>
-                    {
-                        h.Username("user");
-                        h.Password("mypassword");
-                    });
+                    cfg.Host(
+                        Configuration["RabbitMq:Host"] ?? "localhost",
+                        Configuration["RabbitMq:VirtualHost"] ?? "/",
+                        h =>
+                        {
+                            h.Username(Configuration["RabbitMq:Username"] ?? "user");
+                            h.Password(Configuration["RabbitMq:Password"] ?? "mypassword");
+                        });
+
                     cfg.ConfigureEndpoints(ctx);
                 });
             });

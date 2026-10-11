@@ -20,7 +20,7 @@ namespace UserService.API.Controllers
         [SwaggerResponse(200, "User registered successfully", type: typeof(string))]
         [SwaggerResponse(400, "Invalid registration data")]
         [SwaggerResponse(500, "An unexpected error occurred")]
-        public async Task<IActionResult> SignUp([FromQuery] SignUpCommand command)
+        public async Task<IActionResult> SignUp([FromBody] SignUpCommand command)
         {
             var response = await Mediator.Send(command);
             return NewResult(response);

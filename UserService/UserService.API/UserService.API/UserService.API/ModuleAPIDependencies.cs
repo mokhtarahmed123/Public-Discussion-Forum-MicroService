@@ -11,16 +11,16 @@ namespace UserService.API
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("UserServiceDbConnection")));
             #endregion
-            #region CORS
-            services.AddCors(options =>
-                     options.AddPolicy("CorsPolicy", policyBuilder =>
-                         policyBuilder.SetIsOriginAllowed(_ => true)
+            //#region CORS
+            //services.AddCors(options =>
+            //         options.AddPolicy("CorsPolicy", policyBuilder =>
+            //             policyBuilder.SetIsOriginAllowed(_ => true)
 
-                                      .AllowAnyMethod()
-                                      .AllowAnyHeader().AllowCredentials())
+            //                          .AllowAnyMethod()
+            //                          .AllowAnyHeader().AllowCredentials())
 
-                 );
-            #endregion
+            //     );
+            //#endregion
             return services;
         }
     }
