@@ -22,6 +22,17 @@ namespace PostsCommentsService.API
             var app = builder.Build();
 
 
+<<<<<<< HEAD
+=======
+
+
+            //if (app.Environment.IsDevelopment())
+            //{
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            //}
+
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
 
 
             //if (app.Environment.IsDevelopment())

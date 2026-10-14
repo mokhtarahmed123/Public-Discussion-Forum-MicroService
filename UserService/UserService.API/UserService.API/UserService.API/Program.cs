@@ -23,6 +23,7 @@ public class Program
                        .AddModuleCoreDependencies();
 
         var app = builder.Build();
+<<<<<<< HEAD
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -36,6 +37,18 @@ public class Program
             }
         }
 
+=======
+
+        //if (app.Environment.IsDevelopment())
+        //{
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        //}
+
+        app.UseCors("CorsPolicy");
+        app.UseAuthentication();
+        app.UseAuthorization();
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
 
         app.UseSwagger();
         app.UseSwaggerUI();

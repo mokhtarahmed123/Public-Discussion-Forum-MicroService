@@ -9,6 +9,7 @@ namespace PostsCommentsService.Application.Feature.Posts.Command.Validator
         public UpdatePostCommandValidator()
         {
             RuleFor(x => x.Id)
+<<<<<<< HEAD
                 .NotEmpty().WithMessage("Post ID is required.")
                 .Must(id => ObjectId.TryParse(id, out _))
                 .WithMessage("The post ID is invalid.");
@@ -26,6 +27,21 @@ namespace PostsCommentsService.Application.Feature.Posts.Command.Validator
             RuleFor(x => x.TypeOfPosts)
                 .IsInEnum()
                 .WithMessage("The post type is invalid.");
+=======
+                .NotEmpty().WithMessage("رقم البوست مطلوب.")
+                .Must(id => ObjectId.TryParse(id, out _)).WithMessage("رقم البوست غير صحيح.");
+
+            RuleFor(x => x.Title)
+                .NotEmpty().WithMessage("العنوان مطلوب.")
+                .MaximumLength(200);
+
+            RuleFor(x => x.Content)
+                .NotEmpty().WithMessage("المحتوى مطلوب.")
+                .MaximumLength(10000);
+
+            RuleFor(x => x.TypeOfPosts).IsInEnum();
+            RuleFor(x => x.UserId).NotEqual(Guid.Empty);
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
         }
     }
 }

@@ -5,7 +5,11 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
+<<<<<<< HEAD
     ports: [ "127.0.0.1:15672:15672" ]
+=======
+    ports: [ "15672:15672" ]
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
     environment:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
@@ -24,20 +28,32 @@ services:
 
   user-service:
     build: { context: ., dockerfile: Dockerfile.user }
+<<<<<<< HEAD
     # ports: [ "5298:8080" ]
+=======
+    ports: [ "5298:8080" ]
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
     environment:
       ConnectionStrings__UserServiceDbConnection: "Server=sqlserver;Database=UsersDb;User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True"
       JWT__AudienceIP: forum-api
       JWT__IssuerIP: forum-auth
       JWT__SecretKey: ${JWT_SECRET}
+<<<<<<< HEAD
       App__PublicBaseUrl: http://localhost:5238
+=======
+      
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
       Email__Password: ${EMAIL_PASSWORD}
       Google__ClientId: ${GOOGLE_CLIENT_ID}
     depends_on: [ sqlserver ]
 
   posts-service:
     build: { context: ., dockerfile: Dockerfile.posts }
+<<<<<<< HEAD
     # ports: [ "5111:8080" ]
+=======
+    ports: [ "5111:8080" ]
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
     environment:
       PostsAndCommentsDatabase__ConnectionString: mongodb://mongo:27017
       Services__Auth__BaseUrl: http://user-service:8080/
@@ -48,7 +64,11 @@ services:
 
   votes-service:
     build: { context: ., dockerfile: Dockerfile.votes }
+<<<<<<< HEAD
     # ports: [ "5221:8080" ]
+=======
+    ports: [ "5221:8080" ]
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
     environment:
       VotesDatabase__ConnectionString: mongodb://mongo:27017
       RabbitMq__Host: rabbitmq
@@ -67,7 +87,11 @@ services:
 
   ranking-service:
     build: { context: ., dockerfile: Dockerfile.ranking }
+<<<<<<< HEAD
     # ports: [ "5001:8080" ]
+=======
+    ports: [ "5001:8080" ]
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
     environment:
       RankingDatabase__ConnectionString: mongodb://mongo:27017
       RabbitMq__Host: rabbitmq
@@ -84,9 +108,12 @@ services:
     build: { context: ., dockerfile: Dockerfile.gateway }
     ports: [ "5238:8080" ]
     environment:
+<<<<<<< HEAD
       JWT__IssuerIP: forum-auth
       JWT__AudienceIP: forum-api
       JWT__SecretKey: ${JWT_SECRET}
+=======
+>>>>>>> 6ce00c0b2538e159445141615b97fd4ad1221beb
       ReverseProxy__Clusters__votes-cluster__Destinations__d1__Address: http://votes-service:8080/
       ReverseProxy__Clusters__ranking-cluster__Destinations__d1__Address: http://ranking-service:8080/
       ReverseProxy__Clusters__posts-cluster__Destinations__d1__Address: http://posts-service:8080/
